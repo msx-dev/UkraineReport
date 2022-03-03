@@ -10,3 +10,10 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  height: 250px;
+}
