@@ -1,15 +1,27 @@
+import React from "react";
 import { useState, useEffect } from "react";
-import Map, { Marker, Popup } from "react-map-gl";
+import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import axios from "axios";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./App.css";
-import { Room } from "@material-ui/icons";
+import { ClosedCaption, Room } from "@material-ui/icons";
 import { format } from "timeago.js";
 
 function App() {
   const [pins, setPins] = useState([]);
   //Contains selected pin
   const [selectedPin, setSelectedPin] = useState(null);
+  const [newPin, setNewPin] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [description, setDescription] = useState(null);
+  const [type, setType] = useState(null);
+  const [number, setNumber] = useState(0);
+  const [showPopup, setShowPopup] = useState(false);
+  const [viewport, setViewport] = useState({
+    longitude: 31.1656,
+    latitude: 48.3794,
+    zoom: 5,
+  });
 
   //Get all pins from the database
   useEffect(() => {
@@ -25,56 +37,135 @@ function App() {
     //console.log(pins);
   }, []);
 
-  const handlePinClick = (pin) => {
-    console.log("here");
-    setSelectedPin(pin);
-    console.log(pin);
+  const submitForm = async (e) => {
+    e.preventDefault();
+    const addPin = {
+      title: title,
+      description: description,
+      type: type,
+      number: number,
+      lat: newPin.lat,
+      long: newPin.long,
+    };
+
+    try {
+      const response = await axios.post("/pins", addPin);
+      setPins([...pins, response.data]);
+      setNewPin(null);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
+  useEffect(() => {
+    const listener = (e) => {
+      if (e.key === "Escape") {
+        setSelectedPin(null);
+        setNewPin(null);
+      }
+    };
+    window.addEventListener("keydown", listener);
+
+    return () => {
+      window.removeEventListener("keydown", listener);
+    };
+  }, []);
+
+  const handlePinClick = (id, lat, long) => {
+    setSelectedPin(id);
+    setViewport({ ...viewport, latitude: lat, longitue: long });
+  };
+
+  const addNewPin = (e) => {
+    const [long, lat] = e.lngLat;
+    setNewPin({ lat: lat, long: long });
+  };
+
+  useEffect(() => {
+    console.log(selectedPin);
+  }, [selectedPin]);
+
   return (
-    <div className="App">
-      <Map
-        initialViewState={{
-          longitude: 31.1656,
-          latitude: 48.3794,
-          zoom: 5,
-        }}
-        style={{ width: "100vw", height: "100vh" }}
+    <div className="App" style={{ height: "100vh", width: "100%" }}>
+      <ReactMapGL
+        {...viewport}
+        mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
+        width="100%"
+        height="100%"
         mapStyle="mapbox://styles/msude/cl0b56qxj000215qj1qgx7faq"
-        mapboxAccessToken={process.env.REACT_APP_MAPBOX}
+        onViewportChange={(viewport) => setViewport(viewport)}
+        onDblClick={addNewPin}
+        transitionDuration={150}
       >
         {pins.map((pin) => (
           <>
             <Marker longitude={pin.long} latitude={pin.lat} anchor="bottom">
               <Room
                 style={{ color: "red", cursor: "pointer" }}
-                onClick={() => handlePinClick(pin)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePinClick(pin._id, pin.lat, pin.long);
+                }}
               />
             </Marker>
-            {selectedPin ? (
+
+            {selectedPin === pin._id && (
               <Popup
-                key={selectedPin._id}
-                longitude={selectedPin.long}
-                latitude={selectedPin.lat}
+                key={pin._id}
+                longitude={pin.long}
+                latitude={pin.lat}
                 anchor="bottom"
                 onClose={() => setSelectedPin(null)}
               >
                 <div className="popup">
                   <label>Title</label>
-                  <h2>{selectedPin.title}</h2>
+                  <h2>{pin.title}</h2>
                   <label>Description</label>
-                  <h2>{selectedPin.description}</h2>
+                  <h2>{pin.description}</h2>
                   <label>Type of forces</label>
+                  <h2>{pin.type}</h2>
                   <label>Est. number of forces</label>
-                  <h2>{selectedPin.number}</h2>
+                  <h2>{pin.number}</h2>
                   <label>Added on</label>
-                  <h2>{format(selectedPin.createdAt)}</h2>
+                  <h2>{format(pin.createdAt)}</h2>
                 </div>
               </Popup>
-            ) : null}
+            )}
           </>
         ))}
-      </Map>
+        {newPin && (
+          <Popup longitude={newPin.long} latitude={newPin.lat} anchor="bottom">
+            <div>
+              <form onSubmit={submitForm}>
+                <label>Title</label>
+                <input
+                  placeholder="Title"
+                  onChange={(e) => setTitle(e.target.value)}
+                ></input>
+                <label>Description</label>
+                <textarea
+                  placeholder="Description"
+                  onChange={(e) => setDescription(e.target.value)}
+                ></textarea>
+                <label>Type</label>
+                <select onChange={(e) => setType(e.target.value)}>
+                  <option value="Troops">Troops</option>
+                  <option value="Tanks">Tanks</option>
+                  <option value="Missile">Missile</option>
+                  <option value="Other">Other</option>
+                </select>
+                <label>Number</label>
+                <input
+                  placeholder="Number of troops"
+                  onChange={(e) => setNumber(e.target.value)}
+                ></input>
+                <button type="submit">Submit</button>
+                <p>Press ESC key to close</p>
+              </form>
+            </div>
+          </Popup>
+        )}
+      </ReactMapGL>
     </div>
   );
 }

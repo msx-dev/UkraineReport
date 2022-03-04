@@ -17,3 +17,12 @@ body {
   width: 250px;
   height: 250px;
 }
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.mapboxgl-popup {
+  z-index: 10;
+}

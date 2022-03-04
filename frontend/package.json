@@ -11,12 +11,15 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.26.0",
     "dotenv": "^16.0.0",
+    "json-loader": "^0.5.7",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-map-gl": "^7.0.8",
+    "react-map-gl": "6.1",
     "react-scripts": "5.0.0",
     "timeago.js": "^4.0.2",
-    "web-vitals": "^2.1.4"
+    "transform-loader": "^0.2.4",
+    "web-vitals": "^2.1.4",
+    "webworkify-webpack": "^1.0.6"
   },
   "scripts": {
     "start": "react-scripts start",
