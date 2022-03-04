@@ -4,7 +4,9 @@ import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import axios from "axios";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./App.css";
-import { ClosedCaption, Room } from "@material-ui/icons";
+import { Room } from "@material-ui/icons";
+import { GiBattleTank, GiRallyTheTroops } from "react-icons/gi";
+import { GoRocket } from "react-icons/go";
 import { format } from "timeago.js";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import Geocoder from "react-map-gl-geocoder";
@@ -123,7 +125,31 @@ function App() {
           {pins.map((pin) => (
             <>
               <Marker longitude={pin.long} latitude={pin.lat} anchor="bottom">
-                {/*{pin.type === "Tanks" && (
+                {pin.type == "Tanks" ? (
+                  <GiBattleTank
+                    style={{ color: "red", cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePinClick(pin._id, pin.lat, pin.long);
+                    }}
+                  />
+                ) : pin.type == "Missile" ? (
+                  <GoRocket
+                    style={{ color: "red", cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePinClick(pin._id, pin.lat, pin.long);
+                    }}
+                  />
+                ) : pin.type == "Troops" ? (
+                  <GiRallyTheTroops
+                    style={{ color: "red", cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePinClick(pin._id, pin.lat, pin.long);
+                    }}
+                  />
+                ) : (
                   <Room
                     style={{ color: "red", cursor: "pointer" }}
                     onClick={(e) => {
@@ -131,14 +157,7 @@ function App() {
                       handlePinClick(pin._id, pin.lat, pin.long);
                     }}
                   />
-                )} */}
-                <Room
-                  style={{ color: "red", cursor: "pointer" }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handlePinClick(pin._id, pin.lat, pin.long);
-                  }}
-                />
+                )}
               </Marker>
 
               {selectedPin === pin._id && (
@@ -152,12 +171,16 @@ function App() {
                   <div className="popup">
                     <label>Title</label>
                     <h2>{pin.title}</h2>
+                    <hr />
                     <label>Description</label>
                     <h2>{pin.description}</h2>
+                    <hr></hr>
                     <label>Type of forces</label>
                     <h2>{pin.type}</h2>
+                    <hr className="separator" />
                     <label>Est. number of forces</label>
                     <h2>{pin.number}</h2>
+                    <hr className="separator" />
                     <label>Added on</label>
                     <h2>{format(pin.createdAt)}</h2>
                   </div>
