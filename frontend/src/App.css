@@ -15,7 +15,14 @@ body {
   display: flex;
   flex-direction: column;
   width: 250px;
-  height: 250px;
+  height: auto;
+}
+
+.popupAdd {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  height: auto;
 }
 
 form {
@@ -24,14 +31,78 @@ form {
 }
 
 label {
-  font-size: 1.2rem;
+  font-size: 1rem;
+  font-family: "Roboto", sans-serif;
+  color: #444444;
+  margin-bottom: 0.2rem;
 }
 
-h2 {
-  font-size: 1rem;
+h2.pinText {
+  color: #080808;
+  font-size: 1.3rem;
   margin: 0;
+  border-bottom: 1px solid rgb(202, 202, 202);
+  padding-bottom: 0.2rem;
+  margin-bottom: 1rem;
+  font-family: "Roboto", sans-serif;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+textarea,
+input,
+select {
+  border: none;
+  border-bottom: 1px solid rgb(202, 202, 202);
+  background-color: rgb(241, 241, 241);
+  margin-bottom: 1.2rem;
+  font-size: 1.2rem;
+  font-family: "Roboto", sans-serif;
+}
+
+.submit {
+  background-color: rgb(224, 193, 193);
+  border: none;
+  width: 50%;
+
+  font-size: 1.2rem;
+  font-family: "Roboto", sans-serif;
+  border-radius: 20px;
+  padding: 0.6rem 0;
+}
+
+p.hint {
+  font-family: "Roboto", sans-serif;
 }
 
 .mapboxgl-popup {
   z-index: 10;
+}
+
+.mapStyleButton {
+  background-color: rgb(87, 87, 87);
+  position: absolute;
+  right: 10px;
+  padding: 0 0.6rem;
+  top: 10px;
+  border-radius: 50px;
+}
+
+.viewText {
+  font-family: "Roboto", sans-serif;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.aboutButton {
+  background-color: rgb(87, 87, 87);
+  position: absolute;
+  right: 150px;
+  padding: 0 0.6rem;
+  top: 10px;
+  border-radius: 50px;
 }

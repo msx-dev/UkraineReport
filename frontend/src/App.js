@@ -22,6 +22,10 @@ function App() {
   const [number, setNumber] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [ip, setIp] = useState("");
+  const [map, setMap] = useState("Draw");
+  const [mapStyle, setMapStyle] = useState(
+    "mapbox://styles/msude/cl0b56qxj000215qj1qgx7faq"
+  );
   const [viewport, setViewport] = useState({
     longitude: 31.1656,
     latitude: 48.3794,
@@ -60,6 +64,10 @@ function App() {
       const response = await axios.post("/pins", addPin);
       setPins([...pins, response.data]);
       setNewPin(null);
+
+      setTitle("");
+      setDescription("");
+      setType("Troops");
     } catch (error) {
       console.log(error);
     }
@@ -98,9 +106,17 @@ function App() {
     setIp(res.data.country_code);
   };
 
-  useEffect(() => {
-    getIp();
-  }, []);
+  const changeMapStyle = () => {
+    if (mapStyle == "mapbox://styles/msude/cl0b56qxj000215qj1qgx7faq") {
+      setMapStyle("mapbox://styles/mapbox/satellite-v8");
+      setMap("Satellite");
+    } else {
+      setMapStyle("mapbox://styles/msude/cl0b56qxj000215qj1qgx7faq");
+      setMap("Draw");
+    }
+  };
+
+  useEffect(() => {});
 
   return (
     <div className="App" style={{ height: "100vh", width: "100%" }}>
@@ -111,10 +127,11 @@ function App() {
           mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
           width="100%"
           height="100%"
-          mapStyle="mapbox://styles/msude/cl0b56qxj000215qj1qgx7faq"
+          //mapStyle="mapbox://styles/msude/cl0b56qxj000215qj1qgx7faq"
+          //mapStyle="mapbox://styles/mapbox/satellite-v8"
+          mapStyle={mapStyle}
           onViewportChange={(viewport) => setViewport(viewport)}
           onDblClick={addNewPin}
-          transitionDuration={150}
         >
           <Geocoder
             onViewportChange={(viewport) => setViewport(viewport)}
@@ -124,26 +141,44 @@ function App() {
           />
           {pins.map((pin) => (
             <>
-              <Marker longitude={pin.long} latitude={pin.lat} anchor="bottom">
-                {pin.type == "Tanks" ? (
+              <Marker
+                longitude={pin.long}
+                latitude={pin.lat}
+                anchor="bottom"
+                offsetLeft={-2.8 * viewport.zoom}
+                offsetTop={-2.3 * viewport.zoom}
+              >
+                {pin.type === "Tanks" ? (
                   <GiBattleTank
-                    style={{ color: "red", cursor: "pointer" }}
+                    style={{
+                      color: "#eb1100",
+                      cursor: "pointer",
+                      fontSize: 5 * viewport.zoom,
+                    }}
                     onClick={(e) => {
                       e.preventDefault();
                       handlePinClick(pin._id, pin.lat, pin.long);
                     }}
                   />
-                ) : pin.type == "Missile" ? (
+                ) : pin.type === "Missile" ? (
                   <GoRocket
-                    style={{ color: "red", cursor: "pointer" }}
+                    style={{
+                      color: "#eb1100",
+                      cursor: "pointer",
+                      fontSize: 5 * viewport.zoom,
+                    }}
                     onClick={(e) => {
                       e.preventDefault();
                       handlePinClick(pin._id, pin.lat, pin.long);
                     }}
                   />
-                ) : pin.type == "Troops" ? (
+                ) : pin.type === "Troops" ? (
                   <GiRallyTheTroops
-                    style={{ color: "red", cursor: "pointer" }}
+                    style={{
+                      color: "#eb1100",
+                      cursor: "pointer",
+                      fontSize: 5 * viewport.zoom,
+                    }}
                     onClick={(e) => {
                       e.preventDefault();
                       handlePinClick(pin._id, pin.lat, pin.long);
@@ -151,7 +186,11 @@ function App() {
                   />
                 ) : (
                   <Room
-                    style={{ color: "red", cursor: "pointer" }}
+                    style={{
+                      color: "#eb1100",
+                      cursor: "pointer",
+                      fontSize: 5 * viewport.zoom,
+                    }}
                     onClick={(e) => {
                       e.preventDefault();
                       handlePinClick(pin._id, pin.lat, pin.long);
@@ -170,22 +209,32 @@ function App() {
                 >
                   <div className="popup">
                     <label>Title</label>
-                    <h2>{pin.title}</h2>
-                    <hr />
+                    <h2 className="pinText">{pin.title}</h2>
+
                     <label>Description</label>
-                    <h2>{pin.description}</h2>
-                    <hr></hr>
+                    <h2 className="pinText">{pin.description}</h2>
+
                     <label>Type of forces</label>
-                    <h2>{pin.type}</h2>
-                    <hr className="separator" />
+                    <h2 className="pinText">{pin.type}</h2>
+
                     <label>Est. number of forces</label>
-                    <h2>{pin.number}</h2>
-                    <hr className="separator" />
-                    <label>Added on</label>
-                    <h2>{format(pin.createdAt)}</h2>
+                    <h2 className="pinText">{pin.number}</h2>
+
+                    <label>Added</label>
+                    <h2 className="pinText">{format(pin.createdAt)}</h2>
                   </div>
                 </Popup>
               )}
+              <div className="mapStyleButton" onClick={changeMapStyle}>
+                {map === "Draw" ? (
+                  <h1 className="viewText">Satellite View</h1>
+                ) : (
+                  <h1 className="viewText">Classic View</h1>
+                )}
+              </div>
+              <div className="aboutButton">
+                <h1 className="viewText">About</h1>
+              </div>
             </>
           ))}
           {newPin && (
@@ -194,7 +243,7 @@ function App() {
               latitude={newPin.lat}
               anchor="bottom"
             >
-              <div>
+              <div className="popupAdd">
                 <form onSubmit={submitForm}>
                   <label>Title</label>
                   <input
@@ -205,6 +254,7 @@ function App() {
                   <textarea
                     placeholder="Description"
                     onChange={(e) => setDescription(e.target.value)}
+                    maxLength="90"
                   ></textarea>
                   <label>Type</label>
                   <select onChange={(e) => setType(e.target.value)}>
@@ -218,8 +268,10 @@ function App() {
                     placeholder="Number of troops"
                     onChange={(e) => setNumber(e.target.value)}
                   ></input>
-                  <button type="submit">Submit</button>
-                  <p>Press ESC key to close</p>
+                  <button type="submit" className="submit">
+                    Submit
+                  </button>
+                  <p className="hint">Press ESC key to close</p>
                 </form>
               </div>
             </Popup>
