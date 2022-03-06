@@ -20,7 +20,7 @@ function App() {
   const [description, setDescription] = useState(null);
   const [type, setType] = useState("Troops");
   const [number, setNumber] = useState(0);
-
+  const [latestOpen, setLatestOpen] = useState(false);
   const [ip, setIp] = useState("");
   const [map, setMap] = useState("Draw");
   const [latestPin, setLatestPin] = useState(0);
@@ -122,9 +122,13 @@ function App() {
     setLatestPin(id);
   };
 
-  useEffect(() => {
-    console.log(latestPin);
-  }, [latestPin]);
+  const handleLatestOpen = () => {
+    if (latestOpen) {
+      setLatestOpen(false);
+    } else {
+      setLatestOpen(true);
+    }
+  };
 
   return (
     <div className="App" style={{ height: "100vh", width: "100%" }}>
@@ -167,7 +171,7 @@ function App() {
                 {pin.type === "Tanks" ? (
                   <GiBattleTank
                     style={{
-                      color: "#eb1100",
+                      color: "#750004",
                       cursor: "pointer",
                       fontSize: 5 * viewport.zoom,
                     }}
@@ -191,7 +195,7 @@ function App() {
                 ) : pin.type === "Troops" ? (
                   <GiRallyTheTroops
                     style={{
-                      color: "#eb1100",
+                      color: "black",
                       cursor: "pointer",
                       fontSize: 5 * viewport.zoom,
                     }}
@@ -203,7 +207,7 @@ function App() {
                 ) : (
                   <Room
                     style={{
-                      color: "#eb1100",
+                      color: "darkorange",
                       cursor: "pointer",
                       fontSize: 5 * viewport.zoom,
                     }}
@@ -277,11 +281,8 @@ function App() {
                   <h1 className="viewText">Classic View</h1>
                 )}
               </div>
-              <div className="latestButton">
+              <div className="latestButton" onClick={handleLatestOpen}>
                 <h1 className="viewText">Latest Reports</h1>
-              </div>
-              <div className="aboutButton">
-                <h1 className="viewText">About</h1>
               </div>
             </>
           ))}
@@ -332,28 +333,72 @@ function App() {
           functionality!
         </h1>
       )}
-      <div className="latestReports">
-        {pins
-          .slice(0)
-          .reverse()
-          .map((pin) =>
-            format(pin.createdAt) === "2 days ago" ? null : format(
-                pin.createdAt
-              ) === "3 days ago" ? null : (
-              <div
-                className="latestEntry"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleLatestClick(pin._id);
-                }}
-              >
-                <h3 className="latestTitle">{pin.title}</h3>
-                <h4 className="latestType">{pin.type}</h4>
-                <h5 className="latestTime">{format(pin.createdAt)}</h5>
-              </div>
-            )
-          )}
-      </div>
+      {latestOpen && (
+        <div className="latestReports">
+          {pins
+            .slice(0)
+            .reverse()
+            .map((pin) =>
+              format(pin.createdAt) === "2 days ago" ? null : format(
+                  pin.createdAt
+                ) === "3 days ago" ? null : (
+                <div
+                  className="latestEntry"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleLatestClick(pin._id);
+                  }}
+                >
+                  {pin.type === "Troops" ? (
+                    <GiRallyTheTroops
+                      style={{
+                        color: "black",
+                        cursor: "pointer",
+                        fontSize: 5 * viewport.zoom,
+                        float: "right",
+                      }}
+                    />
+                  ) : pin.type === "Tanks" ? (
+                    <GiBattleTank
+                      style={{
+                        color: "black",
+                        cursor: "pointer",
+                        fontSize: 5 * viewport.zoom,
+                        float: "right",
+                      }}
+                    />
+                  ) : pin.type === "Missile" ? (
+                    <GoRocket
+                      style={{
+                        color: "black",
+                        cursor: "pointer",
+                        fontSize: 5 * viewport.zoom,
+                        float: "right",
+                      }}
+                    />
+                  ) : (
+                    <Room
+                      style={{
+                        color: "black",
+                        cursor: "pointer",
+                        fontSize: 5 * viewport.zoom,
+                        float: "right",
+                      }}
+                    />
+                  )}
+
+                  <h3 className="titleEntry">Title</h3>
+                  <h3 className="latestTitle">{pin.title}</h3>
+
+                  <h3 className="titleEntry">Type</h3>
+                  <h4 className="latestType">{pin.type}</h4>
+                  <h3 className="titleEntry">Time</h3>
+                  <h5 className="latestTime">{format(pin.createdAt)}</h5>
+                </div>
+              )
+            )}
+        </div>
+      )}
     </div>
   );
 }
