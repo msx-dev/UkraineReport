@@ -18,14 +18,16 @@ function App() {
   const [newPin, setNewPin] = useState(null);
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
-  const [type, setType] = useState(null);
+  const [type, setType] = useState("Troops");
   const [number, setNumber] = useState(0);
-  const [showPopup, setShowPopup] = useState(false);
+
   const [ip, setIp] = useState("");
   const [map, setMap] = useState("Draw");
+  const [latestPin, setLatestPin] = useState(0);
   const [mapStyle, setMapStyle] = useState(
     "mapbox://styles/msude/cl0b56qxj000215qj1qgx7faq"
   );
+
   const [viewport, setViewport] = useState({
     longitude: 31.1656,
     latitude: 48.3794,
@@ -116,7 +118,13 @@ function App() {
     }
   };
 
-  useEffect(() => {});
+  const handleLatestClick = (id) => {
+    setLatestPin(id);
+  };
+
+  useEffect(() => {
+    console.log(latestPin);
+  }, [latestPin]);
 
   return (
     <div className="App" style={{ height: "100vh", width: "100%" }}>
@@ -207,7 +215,7 @@ function App() {
                 )}
               </Marker>
 
-              {selectedPin === pin._id && (
+              {selectedPin === pin._id ? (
                 <Popup
                   key={pin._id}
                   longitude={pin.long}
@@ -232,7 +240,35 @@ function App() {
                     <h2 className="pinText">{format(pin.createdAt)}</h2>
                   </div>
                 </Popup>
-              )}
+              ) : latestPin === pin._id ? (
+                <Popup
+                  key={pin._id}
+                  longitude={pin.long}
+                  latitude={pin.lat}
+                  anchor="bottom"
+                  onClose={() => {
+                    setSelectedPin(null);
+                    setLatestPin(null);
+                  }}
+                >
+                  <div className="popup">
+                    <label>Title</label>
+                    <h2 className="pinText">{pin.title}</h2>
+
+                    <label>Description</label>
+                    <h2 className="pinText">{pin.description}</h2>
+
+                    <label>Type of forces</label>
+                    <h2 className="pinText">{pin.type}</h2>
+
+                    <label>Est. number of forces</label>
+                    <h2 className="pinText">{pin.number}</h2>
+
+                    <label>Added</label>
+                    <h2 className="pinText">{format(pin.createdAt)}</h2>
+                  </div>
+                </Popup>
+              ) : null}
 
               <div className="mapStyleButton" onClick={changeMapStyle}>
                 {map === "Draw" ? (
@@ -304,9 +340,16 @@ function App() {
             format(pin.createdAt) === "2 days ago" ? null : format(
                 pin.createdAt
               ) === "3 days ago" ? null : (
-              <div>
-                <h4>{pin.title}</h4>
-                <h5>{format(pin.createdAt)}</h5>
+              <div
+                className="latestEntry"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLatestClick(pin._id);
+                }}
+              >
+                <h3 className="latestTitle">{pin.title}</h3>
+                <h4 className="latestType">{pin.type}</h4>
+                <h5 className="latestTime">{format(pin.createdAt)}</h5>
               </div>
             )
           )}

@@ -1,3 +1,7 @@
+* {
+  font-family: "Roboto", sans-serif;
+}
+
 .mapboxgl-canvas {
   position: absolute;
   top: 0;
@@ -32,7 +36,7 @@ form {
 
 label {
   font-size: 1rem;
-  font-family: "Roboto", sans-serif;
+
   color: #444444;
   margin-bottom: 0.2rem;
 }
@@ -44,7 +48,6 @@ h2.pinText {
   border-bottom: 1px solid rgb(202, 202, 202);
   padding-bottom: 0.2rem;
   margin-bottom: 1rem;
-  font-family: "Roboto", sans-serif;
 }
 
 input:focus,
@@ -61,7 +64,6 @@ select {
   background-color: rgb(241, 241, 241);
   margin-bottom: 1.2rem;
   font-size: 1.2rem;
-  font-family: "Roboto", sans-serif;
 }
 
 .submit {
@@ -70,13 +72,9 @@ select {
   width: 50%;
 
   font-size: 1.2rem;
-  font-family: "Roboto", sans-serif;
+
   border-radius: 20px;
   padding: 0.6rem 0;
-}
-
-p.hint {
-  font-family: "Roboto", sans-serif;
 }
 
 .mapboxgl-popup {
@@ -93,7 +91,6 @@ p.hint {
 }
 
 .viewText {
-  font-family: "Roboto", sans-serif;
   color: white;
   font-size: 1.2rem;
   font-weight: 200;
@@ -127,13 +124,41 @@ p.hint {
 .latestReports {
   position: absolute;
   z-index: 15;
-  top: 250px;
+  top: 230px;
   right: 1%;
   margin: -100px 0 0 -150px;
   background-color: white;
-  width: auto;
-  height: 50%;
+  width: 250px;
+  height: 60%;
   overflow: scroll;
+  border-radius: 10px;
+}
+
+.latestEntry {
+  background-color: gray;
+  border-radius: 10px;
+  margin: 5px;
+  padding: 5px;
+}
+
+.latestEntry:hover {
+  background-color: #d6d6d6;
+  cursor: pointer;
+}
+
+.latestTitle {
+  padding: 0;
+  margin: 0;
+}
+
+.latestType {
+  padding: 0;
+  margin: 0;
+}
+
+.latestTime {
+  padding: 0;
+  margin: 0;
 }
 
 @media only screen and (max-width: 960px) {
