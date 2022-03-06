@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import ReactMapGL, { Marker, Popup } from "react-map-gl";
+import ReactMapGL, { Marker, Popup, Source } from "react-map-gl";
 import axios from "axios";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./App.css";
@@ -129,10 +129,18 @@ function App() {
           height="100%"
           //mapStyle="mapbox://styles/msude/cl0b56qxj000215qj1qgx7faq"
           //mapStyle="mapbox://styles/mapbox/satellite-v8"
+          terrain={{ source: "mapbox-dem", exaggeration: 1.5 }}
           mapStyle={mapStyle}
           onViewportChange={(viewport) => setViewport(viewport)}
           onDblClick={addNewPin}
         >
+          <Source
+            id="mapbox-dem"
+            type="raster-dem"
+            url="mapbox://mapbox.mapbox-terrain-dem-v1"
+            tileSize={512}
+            maxzoom={14}
+          />
           <Geocoder
             onViewportChange={(viewport) => setViewport(viewport)}
             mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
@@ -225,6 +233,7 @@ function App() {
                   </div>
                 </Popup>
               )}
+
               <div className="mapStyleButton" onClick={changeMapStyle}>
                 {map === "Draw" ? (
                   <h1 className="viewText">Satellite View</h1>
@@ -232,11 +241,15 @@ function App() {
                   <h1 className="viewText">Classic View</h1>
                 )}
               </div>
+              <div className="latestButton">
+                <h1 className="viewText">Latest Reports</h1>
+              </div>
               <div className="aboutButton">
                 <h1 className="viewText">About</h1>
               </div>
             </>
           ))}
+
           {newPin && (
             <Popup
               longitude={newPin.long}
@@ -283,6 +296,21 @@ function App() {
           functionality!
         </h1>
       )}
+      <div className="latestReports">
+        {pins
+          .slice(0)
+          .reverse()
+          .map((pin) =>
+            format(pin.createdAt) === "2 days ago" ? null : format(
+                pin.createdAt
+              ) === "3 days ago" ? null : (
+              <div>
+                <h4>{pin.title}</h4>
+                <h5>{format(pin.createdAt)}</h5>
+              </div>
+            )
+          )}
+      </div>
     </div>
   );
 }
