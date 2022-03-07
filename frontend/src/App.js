@@ -1,12 +1,16 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import ReactMapGL, { Marker, Popup, Source } from "react-map-gl";
+import ReactMapGL, {
+  Marker,
+  Popup,
+  Source,
+  GeolocateControl,
+} from "react-map-gl";
 import axios from "axios";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./App.css";
 import { Room } from "@material-ui/icons";
-import { GiBattleTank, GiRallyTheTroops } from "react-icons/gi";
-import { GoRocket } from "react-icons/go";
+import { GiHealthNormal } from "react-icons/gi";
 import { format } from "timeago.js";
 import "react-map-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import Geocoder from "react-map-gl-geocoder";
@@ -18,7 +22,7 @@ function App() {
   const [newPin, setNewPin] = useState(null);
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
-  const [type, setType] = useState("Troops");
+  const [type, setType] = useState("Minor");
   const [number, setNumber] = useState(0);
   const [latestOpen, setLatestOpen] = useState(false);
   const [ip, setIp] = useState("");
@@ -69,7 +73,7 @@ function App() {
 
       setTitle("");
       setDescription("");
-      setType("Troops");
+      setType("Minor");
     } catch (error) {
       console.log(error);
     }
@@ -120,6 +124,7 @@ function App() {
 
   const handleLatestClick = (id) => {
     setLatestPin(id);
+    setLatestOpen(false);
   };
 
   const handleLatestOpen = () => {
@@ -153,6 +158,7 @@ function App() {
             tileSize={512}
             maxzoom={14}
           />
+          <GeolocateControl />
           <Geocoder
             onViewportChange={(viewport) => setViewport(viewport)}
             mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
@@ -165,39 +171,39 @@ function App() {
                 longitude={pin.long}
                 latitude={pin.lat}
                 anchor="bottom"
-                offsetLeft={-2.8 * viewport.zoom}
-                offsetTop={-2.3 * viewport.zoom}
+                offsetLeft={-1.6 * viewport.zoom}
+                offsetTop={-1.7 * viewport.zoom}
               >
-                {pin.type === "Tanks" ? (
-                  <GiBattleTank
+                {pin.type === "Minor" ? (
+                  <GiHealthNormal
                     style={{
-                      color: "#750004",
+                      color: "yellow",
                       cursor: "pointer",
-                      fontSize: 5 * viewport.zoom,
+                      fontSize: 3 * viewport.zoom,
                     }}
                     onClick={(e) => {
                       e.preventDefault();
                       handlePinClick(pin._id, pin.lat, pin.long);
                     }}
                   />
-                ) : pin.type === "Missile" ? (
-                  <GoRocket
+                ) : pin.type === "Moderate" ? (
+                  <GiHealthNormal
                     style={{
-                      color: "#eb1100",
+                      color: "orange",
                       cursor: "pointer",
-                      fontSize: 5 * viewport.zoom,
+                      fontSize: 3 * viewport.zoom,
                     }}
                     onClick={(e) => {
                       e.preventDefault();
                       handlePinClick(pin._id, pin.lat, pin.long);
                     }}
                   />
-                ) : pin.type === "Troops" ? (
-                  <GiRallyTheTroops
+                ) : pin.type === "Critical" ? (
+                  <GiHealthNormal
                     style={{
-                      color: "black",
+                      color: "red",
                       cursor: "pointer",
-                      fontSize: 5 * viewport.zoom,
+                      fontSize: 3 * viewport.zoom,
                     }}
                     onClick={(e) => {
                       e.preventDefault();
@@ -205,11 +211,11 @@ function App() {
                     }}
                   />
                 ) : (
-                  <Room
+                  <GiHealthNormal
                     style={{
-                      color: "darkorange",
+                      color: "black",
                       cursor: "pointer",
-                      fontSize: 5 * viewport.zoom,
+                      fontSize: 3 * viewport.zoom,
                     }}
                     onClick={(e) => {
                       e.preventDefault();
@@ -234,10 +240,10 @@ function App() {
                     <label>Description</label>
                     <h2 className="pinText">{pin.description}</h2>
 
-                    <label>Type of forces</label>
+                    <label>Severity</label>
                     <h2 className="pinText">{pin.type}</h2>
 
-                    <label>Est. number of forces</label>
+                    <label>Est. number of injured</label>
                     <h2 className="pinText">{pin.number}</h2>
 
                     <label>Added</label>
@@ -262,10 +268,10 @@ function App() {
                     <label>Description</label>
                     <h2 className="pinText">{pin.description}</h2>
 
-                    <label>Type of forces</label>
+                    <label>Severity</label>
                     <h2 className="pinText">{pin.type}</h2>
 
-                    <label>Est. number of forces</label>
+                    <label>Est. number of injured</label>
                     <h2 className="pinText">{pin.number}</h2>
 
                     <label>Added</label>
@@ -308,14 +314,14 @@ function App() {
                   ></textarea>
                   <label>Type</label>
                   <select onChange={(e) => setType(e.target.value)}>
-                    <option value="Troops">Troops</option>
-                    <option value="Tanks">Tanks</option>
-                    <option value="Missile">Missile</option>
-                    <option value="Other">Other</option>
+                    <option value="Minor">Minor</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Critical">Critical</option>
+                    <option value="Lethal">Lethal</option>
                   </select>
                   <label>Number</label>
                   <input
-                    placeholder="Number of troops"
+                    placeholder="Est. number of injured"
                     onChange={(e) => setNumber(e.target.value)}
                   ></input>
                   <button type="submit" className="submit">
@@ -349,39 +355,39 @@ function App() {
                     handleLatestClick(pin._id);
                   }}
                 >
-                  {pin.type === "Troops" ? (
-                    <GiRallyTheTroops
+                  {pin.type === "Minor" ? (
+                    <GiHealthNormal
                       style={{
-                        color: "black",
+                        color: "yellow",
                         cursor: "pointer",
-                        fontSize: 5 * viewport.zoom,
+                        fontSize: 3 * viewport.zoom,
                         float: "right",
                       }}
                     />
-                  ) : pin.type === "Tanks" ? (
-                    <GiBattleTank
+                  ) : pin.type === "Moderate" ? (
+                    <GiHealthNormal
                       style={{
-                        color: "black",
+                        color: "orange",
                         cursor: "pointer",
-                        fontSize: 5 * viewport.zoom,
+                        fontSize: 3 * viewport.zoom,
                         float: "right",
                       }}
                     />
-                  ) : pin.type === "Missile" ? (
-                    <GoRocket
+                  ) : pin.type === "Critical" ? (
+                    <GiHealthNormal
                       style={{
-                        color: "black",
+                        color: "red",
                         cursor: "pointer",
-                        fontSize: 5 * viewport.zoom,
+                        fontSize: 3 * viewport.zoom,
                         float: "right",
                       }}
                     />
                   ) : (
-                    <Room
+                    <GiHealthNormal
                       style={{
                         color: "black",
                         cursor: "pointer",
-                        fontSize: 5 * viewport.zoom,
+                        fontSize: 3 * viewport.zoom,
                         float: "right",
                       }}
                     />
