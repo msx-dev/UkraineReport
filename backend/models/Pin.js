@@ -25,7 +25,7 @@ const PinSchema = new mongoose.Schema({
     type: Number,
     require: true,
   },
-  createdAt: { type: Date, expires: 259200, default: Date.now },
+  createdAt: { type: Date, expires: 100, default: Date.now },
 });
 
 module.exports = mongoose.model("Pin", PinSchema);
