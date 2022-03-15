@@ -282,13 +282,13 @@ function App() {
 
               <div className="mapStyleButton" onClick={changeMapStyle}>
                 {map === "Draw" ? (
-                  <h1 className="viewText">Satellite View</h1>
+                  <h1 className="buttonText">Satellite View</h1>
                 ) : (
-                  <h1 className="viewText">Classic View</h1>
+                  <h1 className="buttonText">Classic View</h1>
                 )}
               </div>
               <div className="latestButton" onClick={handleLatestOpen}>
-                <h1 className="viewText">Latest Reports</h1>
+                <h1 className="buttonText">Latest Reports</h1>
               </div>
             </>
           ))}

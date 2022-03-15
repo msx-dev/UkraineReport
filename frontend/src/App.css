@@ -110,6 +110,11 @@ select {
   border-radius: 5px;
 }
 
+.buttonText{
+  font-size: 1.4rem;
+  color: white;
+}
+
 .aboutButton:hover,
 .mapStyleButton:hover,
 .latestButton:hover {
